@@ -1,11 +1,15 @@
 import express, {json} from 'express'
 import cliente from './config/db.js'
+import cors from 'cors'
 
 import { insProducts, delProducts } from './controllers/insProductsControllers.js'
 
 const server = express()
 
+const produtos = []
+
 server.use(express.json())
+server.use(cors())
 
 server.get('/', async (req, res) => {
     const resultado = await cliente.query('SELECT * FROM products')
@@ -13,11 +17,14 @@ server.get('/', async (req, res) => {
 })
 
 server.post('/products', async (req, res) => {
-    const {product, price} = req.body
+    const {'product-type': productType, price} = req.body
 
     try {
-        await insProducts(product, price)
-        res.json('inserido')
+        await insProducts(productType, price);
+        res.status(201).json('Inserido');
+
+        const newProduct = { 'product-type': productType, price }
+        produtos.push(newProduct)
     }
 
     catch (ex) {
