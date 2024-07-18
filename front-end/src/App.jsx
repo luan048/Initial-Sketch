@@ -39,12 +39,23 @@ function App() {
     })
       .then(response => {
         console.log(response)
-        setProducts([...products, {id: userId, 'product-type': inputProduct, price: inputPrice}])
       })
+
       .catch(error => {
         console.log(error)
       })
+
+      window.location.reload()
   }
+
+  const totalPrice = products.reduce((total, product) => {
+    const  priceString = product.price ? product.price.replace('R$', '').replace('.', '').replace(',', '.').trim() : '0'
+    const price = parseFloat(priceString) || 0
+
+    return total + price
+  }, 0).toFixed(2)
+
+  const formattedTotalPrice = parseFloat(totalPrice).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})
 
   return (
     <>
@@ -62,6 +73,10 @@ function App() {
             <i className="price">{product.price}</i>
           </div>
         ))}
+      </div>
+
+      <div className="totalPrice">
+        <h3>Total a pagar: R$ {formattedTotalPrice}</h3>
       </div>
     </>
   )
