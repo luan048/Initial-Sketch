@@ -1,4 +1,5 @@
 import express, {json} from 'express'
+import {celebrate, Segments, Joi} from 'celebrate'
 import cliente from './config/db.js'
 import cors from 'cors'
 
@@ -32,7 +33,12 @@ server.post('/products', async (req, res) => {
     }
 })
 
-server.delete('/products/:id', async (req, res) => {
+// Método de Segurança contra SQL INJECTION, para aceitar somente numeros como parametros
+server.delete('/products/:id', celebrate({
+    [Segments.PARAMS]: {
+        id: Joi.number().required()
+    }
+}), async (req, res) => {
     const {id} = req.params
 
     try {
